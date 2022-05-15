@@ -84,16 +84,15 @@ export default defineComponent({
       }
     },
     getMatchListInfo: async function (matchIds: string[]) {
-      let matches: any = [];
+      let matches: any[] = [];
       for (let matchId of matchIds) {
         let { data } = await axios.get(`${ROOT_URL}/match?matchId=${matchId}`);
         matches.push(data);
       }
       return matches;
     },
-    //can add another parameter like a bool for checking for bad allies putting it in the if block
-    getChampCounts: function (matches: any) {
-      let championCounter: any = {
+    getChampCounts: function (matches: any[]) {
+      let champCountMap: ChampionCountMap = {
         bonnie: {},
         brutus: {},
         nemisis: {},
@@ -107,23 +106,31 @@ export default defineComponent({
           match.participants.forEach((player: any) => {
             if (player.puuid === userMatchInfo.puuid) return;
             if (player.teamId !== userMatchInfo.teamId) {
-              if (championCounter.nemisis[player.championId]) {
-                championCounter.nemisis[player.championId].count++;
+              if (champCountMap.nemisis[player.championId]) {
+                champCountMap.nemisis[player.championId].count++;
+                champCountMap.nemisis[player.championId].kda +=
+                  player.challenges.kda;
               } else {
-                championCounter.nemisis[player.championId] = {
+                champCountMap.nemisis[player.championId] = {
+                  championId: player.championId,
                   count: 1,
                   name: player.championName,
                   image: `${player.championName}.png`,
+                  kda: player.challenges.kda,
                 };
               }
             } else {
-              if (championCounter.brutus[player.championId]) {
-                championCounter.brutus[player.championId].count++;
+              if (champCountMap.brutus[player.championId]) {
+                champCountMap.brutus[player.championId].count++;
+                champCountMap.brutus[player.championId].kda +=
+                  player.challenges.kda;
               } else {
-                championCounter.brutus[player.championId] = {
+                champCountMap.brutus[player.championId] = {
+                  championId: player.championId,
                   count: 1,
                   name: player.championName,
                   image: `${player.championName}.png`,
+                  kda: player.challenges.kda,
                 };
               }
             }
@@ -132,20 +139,52 @@ export default defineComponent({
           match.participants.forEach((player: any) => {
             if (player.puuid === userMatchInfo.puuid) return;
             if (player.teamId === userMatchInfo.teamId) {
-              if (championCounter.bonnie[player.championId]) {
-                championCounter.bonnie[player.championId].count++;
+              if (champCountMap.bonnie[player.championId]) {
+                champCountMap.bonnie[player.championId].count++;
+                champCountMap.bonnie[player.championId].kda +=
+                  player.challenges.kda;
               } else {
-                championCounter.bonnie[player.championId] = {
+                champCountMap.bonnie[player.championId] = {
+                  championId: player.championId,
                   count: 1,
                   name: player.championName,
                   image: `${player.championName}.png`,
+                  kda: player.challenges.kda,
                 };
               }
             }
           });
         }
       });
-      return championCounter;
+      return {
+        bonnie: _.slice(
+          _.orderBy(
+            Object.values(champCountMap.bonnie),
+            ["count", "kda"],
+            ["desc", "desc"]
+          ),
+          0,
+          5
+        ),
+        brutus: _.slice(
+          _.orderBy(
+            Object.values(champCountMap.brutus),
+            ["count", "kda"],
+            ["desc", "asc"]
+          ),
+          0,
+          5
+        ),
+        nemisis: _.slice(
+          _.orderBy(
+            Object.values(champCountMap.nemisis),
+            ["count", "kda"],
+            ["desc", "desc"]
+          ),
+          0,
+          5
+        ),
+      };
     },
   },
 });
