@@ -1,6 +1,6 @@
 <template>
   <img alt="Vue logo" src="./assets/logo.png" />
-  <HomeView/>
+  <HomeView />
 </template>
 
 <script lang="ts">

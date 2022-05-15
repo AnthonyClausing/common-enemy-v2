@@ -23,6 +23,6 @@ export const store = createStore<State>({
     SET_USER(state, str) {
       state.user = str;
     },
-  }
+  },
 });
 export default store;
