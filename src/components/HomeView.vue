@@ -1,6 +1,7 @@
 <template>
   <div>
     <h1>Hello</h1>
+    <button :onClick="makeApiCalls">CLICK HERE</button>
     <div>
       <ul>
         <li>CHAMPION LIST</li>
@@ -64,21 +65,24 @@ export default defineComponent({
     //   return state.loading
     // },
   },
-  mounted() {
-    // TODO Turn below axios calls into state actions
-    axios
-      .get(`${ROOT_URL}/summoner?name=${this.summonerName}`)
-      .then((res) => {
-        this.summonerPuuid = res.data.puuid;
-        return axios.get(`${ROOT_URL}/matches?puuid=${res.data.puuid}`);
-      })
-      .then((res) => this.getMatchListInfo(res.data.matchIds))
-      .then((newMatchList) => {
-        this.result = this.getChampCounts(newMatchList);
-      })
-      .catch((err) => console.error(err));
-  },
   methods: {
+    async makeApiCalls() {
+      try {
+        const summonerResponse = await axios.get(
+          `${ROOT_URL}/summoner?name=${this.summonerName}`
+        );
+        const matchIdsResponse = await axios.get(
+          `${ROOT_URL}/matches?puuid=${summonerResponse.data.puuid}`
+        );
+        this.summonerPuuid = summonerResponse.data.puuid;
+        const matches = await this.getMatchListInfo(
+          matchIdsResponse.data.matchIds
+        );
+        this.result = this.getChampCounts(matches);
+      } catch (err) {
+        console.error(err);
+      }
+    },
     getMatchListInfo: async function (matchIds: string[]) {
       let matches: any = [];
       for (let matchId of matchIds) {
