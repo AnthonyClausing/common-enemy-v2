@@ -20,16 +20,43 @@ import axios from "axios";
 import _ from "lodash";
 // import TopEnemies from "./TopEnemies.vue";
 const ROOT_URL = "http://localhost:3000/api";
+
+type ChampionCountSection = {
+  championId: number;
+  count: number;
+  name: string;
+  image: string;
+  kda: number;
+};
+type ChampionCountMap = {
+  bonnie: { [key: string]: ChampionCountSection };
+  brutus: { [key: string]: ChampionCountSection };
+  nemisis: { [key: string]: ChampionCountSection };
+};
+type ChampionCountResult = {
+  bonnie: ChampionCountSection[];
+  brutus: ChampionCountSection[];
+  nemisis: ChampionCountSection[];
+};
+type HomeState = {
+  summonerName: string;
+  summonerPuuid: string;
+  result: ChampionCountResult;
+};
 export default defineComponent({
   name: "HomeView",
   components: {
     // TopEnemies,
   },
-  data() {
+  data(): HomeState {
     return {
       summonerName: "SaltFreeRobot",
       summonerPuuid: "",
-      result: {},
+      result: {
+        bonnie: [],
+        brutus: [],
+        nemisis: [],
+      },
     };
   },
   computed: {
