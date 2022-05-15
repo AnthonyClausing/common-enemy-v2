@@ -11,7 +11,7 @@ function riotURLCreator(type, key, params)  {
         case 'summoner':
             return `https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-name/${params.name}?api_key=${key}`;
         case 'matches':
-            return  `https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/${params.puuid}/ids?queue=420&count=15&api_key=${key}`;
+            return  `https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/${params.puuid}/ids?queue=420&count=20&api_key=${key}`;
         case 'match':
             return `https://americas.api.riotgames.com/lol/match/v5/matches/${params.matchId}?api_key=${key}`
         default:
